@@ -11,6 +11,8 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Alpine.js -->
     {{-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
 
@@ -92,7 +94,7 @@
     </script>
 </head>
 
-<body x-data="{ 'loaded': true}" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
+<body x-data="{ 'loaded': true }" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
 const checkMobile = () => {
     if (window.innerWidth < 1280) {
         $store.sidebar.setMobileOpen(false);
@@ -105,11 +107,47 @@ const checkMobile = () => {
 window.addEventListener('resize', checkMobile);">
 
     {{-- preloader --}}
-    <x-common.preloader/>
+    <x-common.preloader />
     {{-- preloader end --}}
 
     @yield('content')
+    @if (session('toast_success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: @json(session('toast_success')),
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
 
+                @if (session('redirect_after_success'))
+                    setTimeout(() => {
+                        window.location.href = "{{ session('redirect_after_success') }}";
+                    }, 2000);
+                @endif
+            });
+        </script>
+    @endif
+
+    @if (session('toast_error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: @json(session('toast_error')),
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+        </script>
+    @endif
 </body>
 
 @stack('scripts')
